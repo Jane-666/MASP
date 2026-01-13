@@ -1,45 +1,26 @@
-# Leveraging Multi-facet Paths for Heterogeneous Graph Representation Learning (MF2Vec)
-
-
+# 基于多方面学习的异构图神经网络疾病诊断
 
 ### Overview
 
 ### Requirements
-- Python version: 3.9
-- scikit-learn
-- dgl = 1.1.2
-- numpy = 1.26.2
-- pandas = 2.1.0
-- torch = 2.0.1
-
-### How to Run
-````
-
-conda create -n py39 python=3.9
-source activate py39
-conda install pytorch torchvision torchaudio pytorch-cuda=12.1 -c pytorch -c nvidia
-conda install scikit-learn & Requirements
-````
-
-# Execute MF2vec on Filmtrust dataset
-````
-python main.py --dataset dblp 
+- Python version: 3.10
+- scikit-learn = 1.72
+- dgl =  1.1.2+cu118
+- numpy = 1.24.3
+- pandas = 2.3.3
+- torch = 2.3.0+cu118
 ````
 
 ### Arguments
 
 ````--dataset````: name of the dataset
 
-````--isInit````: If ````True````, warm-up step is performed
-
 ````--dim````: dimension size of a node
 
 ````--lr````: learning rate
 
-````--patience````: when to stop (early stop criterion)
-
-````--isReg````: enable aspect regularization framework
-
-````--reg_coef````: lambda in aspect regularization framework
-
 ````--num_aspects````: number of predefined aspects (K)
+
+````--fusion-type````: type of fusion
+
+
