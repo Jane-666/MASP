@@ -17,7 +17,6 @@ def printConfig(args):
         args_vals.append(getattr(args, arg))
 
 def parse_args():
-    # input arguments
     parser = argparse.ArgumentParser(description='MASP')
 
     parser.add_argument('--embedder', nargs='?', default='MASP')
@@ -67,7 +66,6 @@ def parse_args():
     num_labels_default = 6
     args, unknown = parser.parse_known_args()
 
-    # Set defaults based on the data argument
     if args.data == 'mydata3':
         num_nodes_default = 11145 
         user_node_default =  8467
