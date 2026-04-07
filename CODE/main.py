@@ -9,14 +9,6 @@ from datetime import datetime
 from utils import *
 from models.node_classification import NC
 
-# np.random.seed(0)
-# random.seed(0)
-# torch.manual_seed(0)
-# torch.cuda.manual_seed_all(0)
-# torch.backends.cudnn.deterministic = True
-# torch.backends.cudnn.benchmark = False
-# torch.autograd.set_detect_anomaly(True)
-
 def printConfig(args):
     args_names = []
     args_vals = []
