@@ -50,29 +50,29 @@ def parse_args():
     parser.add_argument('--data', type=str, default='mydata3', choices=['mydata4','mydata3','shijie','mydata', 'dblp'])
     # 融合相关参数
     parser.add_argument('--scalar-edge-weights', action='store_true', default=True,
-                        help='是否将边权重转换为标量')
+                        help='')
     # 融合相关参数
     parser.add_argument('--fusion-type', type=str, default='gated_with_cnn',
                         choices=['mlp', 'multihead', 'transformer', 'gated','gated_with_cnn',
                                  'hierarchical', 'adaptive_gumbel'],
-                        help='边权重融合类型')
+                        help='')
     # 多头注意力参数
     parser.add_argument('--fusion-heads', type=int, default=4,
-                        help='多头注意力融合的头数')
+                        help='')
     parser.add_argument('--inner-heads', type=int, default=2,
-                        help='层次化融合的内部注意力头数')
+                        help='')
     parser.add_argument('--cross-heads', type=int, default=4,
-                        help='层次化融合的交叉注意力头数')
+                        help='')
 
     # Gumbel融合参数
     parser.add_argument('--initial-tau', type=float, default=1.0,
-                        help='Gumbel-Softmax初始温度')
+                        help='Gumbel-Softmax')
     parser.add_argument('--min-tau', type=float, default=0.1,
-                        help='Gumbel-Softmax最小温度')
+                        help='Gumbel-Softmax')
     parser.add_argument('--anneal-rate', type=float, default=0.99,
-                        help='Gumbel温度退火率')
+                        help='Gumbel')
     parser.add_argument('--gumbel-hard', action='store_true', default=True,
-                        help='是否使用hard Gumbel-Softmax')
+                        help='hard Gumbel-Softmax')
 
 
     num_labels_default = 6
@@ -80,30 +80,28 @@ def parse_args():
 
     # Set defaults based on the data argument
     if args.data == 'mydata3':
-        num_nodes_default = 11145  # 节点总数
-        user_node_default =  8467 # 用户节点数（即标签节点数）
-        num_labels_default = 6  # 标签类别数（NC任务需要）
-    elif args.data == 'mydata4':  # 数据名
-        num_nodes_default = 11524  # 节点总数
-        user_node_default = 9000  # 用户节点数（即标签节点数）
-        num_labels_default = 6  # 您的标签类别数（NC任务需要）
+        num_nodes_default = 11145 
+        user_node_default =  8467
+        num_labels_default = 6 
+    elif args.data == 'mydata4':
+        num_nodes_default = 11524  
+        user_node_default = 9000 
+        num_labels_default = 6
     elif args.data == 'shijie':
-        num_nodes_default = 8942  # 节点总数
-        user_node_default = 9000  # 用户节点数（即标签节点数）
-        num_labels_default = 5  # 标签类别数（NC任务需要）
+        num_nodes_default = 8942 
+        user_node_default = 9000 
+        num_labels_default = 5
     elif args.data == 'dblp':
         num_nodes_default = 26128
         user_node_default = 4057
         num_labels_default = 4
 
-    # Add other arguments with dynamic defaults
     parser.add_argument('--num_nodes', type=int, default=num_nodes_default)
     parser.add_argument('--user_node', type=int, default=user_node_default)
     parser.add_argument('--num_labels', type=int, default=num_labels_default)
     parser.add_argument('--graph', type=str, default='graph_0')
     parser.add_argument('--use-feature',type=bool, default=True)
 
-    # 添加缺失的pooling参数
     parser.add_argument('--pooling', type=str, default='mean',
                         choices=['mean', 'sum', 'max', 'attention'],
                         help='Pooling method for graph convolution')
@@ -126,9 +124,8 @@ def main():
     print(args.data)
     print("Start Learning [{}]".format( datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
     graph = dgl.load_graphs(f'./data/{args.data}/graph_0_fixed.bin')[0][0].to(args.device)
-    graph = dgl.add_self_loop(graph)  # 添加自环
+    graph = dgl.add_self_loop(graph)
     adj_matrix = graph.adjacency_matrix()
-    print("成功从graph对象获取邻接矩阵")
 
     labels = torch.tensor(np.load(f'./data/{args.data}/labels.npy')).to(args.device).long()
     train = torch.load( f"./data/{args.data}/train_dataset_{args.ratio}.pt")
