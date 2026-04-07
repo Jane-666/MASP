@@ -3,7 +3,7 @@ import numpy as np
 import dgl
 import torch
 import numpy as np
-from utils import node_classification_split  # 假设文档7已导入
+from utils import node_classification_split
 mydata = 'mydata3'
 node_nums = 11145
 user_lenth = 8467  # 病人节点数
