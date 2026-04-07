@@ -20,7 +20,6 @@ def parse_args():
     # input arguments
     parser = argparse.ArgumentParser(description='MASP')
 
-    # Essential parameters
     parser.add_argument('--embedder', nargs='?', default='MASP')
     parser.add_argument('--device', type=str, default='cuda:0')
     parser.add_argument('--lr', type=float, default=0.002, help="Learning rate")
@@ -29,7 +28,6 @@ def parse_args():
     parser.add_argument('--isInit', action = 'store_true', default=True , help="Warm-up")
     parser.add_argument('--reg_coef', type=float, default=0.00001)
 
-    # Default parameters
     parser.add_argument('--batch_size', type=int, default=9000)
     parser.add_argument('--gpu_num', type=int, default=0)
     parser.add_argument('--patience', type=int, default=20)
@@ -40,15 +38,15 @@ def parse_args():
     parser.add_argument('--gnn', type=str, default='GraphSAGE')# GraphSAGE
     parser.add_argument('--ratio', type=float, default=0.8)
     parser.add_argument('--data', type=str, default='mydata3', choices=['mydata4','mydata3','shijie','mydata', 'dblp'])
-    # 融合相关参数
+
     parser.add_argument('--scalar-edge-weights', action='store_true', default=True,
                         help='')
-    # 融合相关参数
+
     parser.add_argument('--fusion-type', type=str, default='gated_with_cnn',
                         choices=['mlp', 'multihead', 'transformer', 'gated','gated_with_cnn',
                                  'hierarchical', 'adaptive_gumbel'],
                         help='')
-    # 多头注意力参数
+
     parser.add_argument('--fusion-heads', type=int, default=4,
                         help='')
     parser.add_argument('--inner-heads', type=int, default=2,
@@ -56,7 +54,6 @@ def parse_args():
     parser.add_argument('--cross-heads', type=int, default=4,
                         help='')
 
-    # Gumbel融合参数
     parser.add_argument('--initial-tau', type=float, default=1.0,
                         help='Gumbel-Softmax')
     parser.add_argument('--min-tau', type=float, default=0.1,
