@@ -141,10 +141,7 @@ class NC(embedder):
             val_loss, val_acc, val_micro_f1, val_macro_f1, val_auc, z = evaluate(model_Nc, self.labels,
                                                                                  load_data_to_gpu(self.test_dataset),
                                                                                  loss_fcn)
-
-            # if aa > best:
             if min_loss > valloss:
-                # best = aa
                 min_loss = valloss
                 cnt_wait = 0
                 result = [val_loss, val_acc, val_micro_f1, val_macro_f1, val_auc]
@@ -165,7 +162,7 @@ class NC(embedder):
         try:
             self.visualize_tsne(best_z, self.labels, self.test_dataset[0], args.data)
         except Exception as e:
-            print(f"t-SNE可视化失败: {e}")
+            print(f"t-SNE: {e}")
 
     def visualize_tsne(self, embeddings, labels, test_indices, data_name, max_points=8467):
         import matplotlib.pyplot as plt
@@ -192,8 +189,6 @@ class NC(embedder):
         sample_embeddings = embeddings_np[sampled_idx]
         sample_labels = labels_np[sampled_idx]
 
-        print(f"进行t-SNE降维，处理 {len(sampled_idx)} 个节点")
-
         tsne_params = {
             'n_components': 2,
             'random_state': 42,
@@ -213,7 +208,7 @@ class NC(embedder):
 
             tsne = TSNE(**tsne_params)
 
-        print(f"TSNE参数: {tsne.get_params()}")
+        print(f"TSNE: {tsne.get_params()}")
 
         embeddings_2d = tsne.fit_transform(sample_embeddings)
 
@@ -225,7 +220,7 @@ class NC(embedder):
             '#800080',  
             '#00FFFF' 
         ]
-        color_names = ["红", "蓝", "绿", "黄", "紫", "青"]
+        color_names = ["red", "blue", "green", "yello", "purple", "Cyan"]
 
         unique_labels = np.unique(sample_labels)
         unique_labels.sort()  
@@ -257,10 +252,10 @@ class NC(embedder):
                 linewidth=0.5
             )
 
-        ax.set_title(f'{data_name} - 所有节点t-SNE可视化 (共{len(sampled_idx)}个节点)', fontsize=14)
+        ax.set_title(f'{data_name} - t-SNE ({len(sampled_idx)} nodes)', fontsize=14)
         ax.set_xlabel('t-SNE Component 1', fontsize=12)
         ax.set_ylabel('t-SNE Component 2', fontsize=12)
-        ax.legend(title='标签类别', bbox_to_anchor=(1.05, 1), loc='upper left')
+        ax.legend(title='class', bbox_to_anchor=(1.05, 1), loc='upper left')
 
         ax.grid(False) 
 
@@ -312,7 +307,6 @@ class modeler_warm(nn.Module):
     def forward(self):
         x = self.fc(self.feat)
 
-        # 方法1: 使用 indices() 方法
         indices = self.adjacency_matrix.indices()
         src, dst = indices[0], indices[1]
 
@@ -413,12 +407,10 @@ class modeler_Nc(nn.Module):
         nn.init.normal_(self.base_aspect_embedding.weight, mean=0.0, std=0.1)
 
         self.aspect_transform_layers = nn.ModuleList([
-            # self._create_aspect_transform(args.dim, args.transform_type)
             self._create_aspect_transform(args.dim)
             for _ in range(self.num_aspects)
         ])
 
-        # if args.use_aspect_bias:
         if True:
             self.aspect_biases = nn.Parameter(
                 torch.zeros(self.num_aspects, self.dim)
@@ -436,7 +428,6 @@ class modeler_Nc(nn.Module):
         self.g = g
         self.dropout_rate = args.dropout
         fusion_type = args.fusion_type
-        # fusion_type = getattr(args, 'fusion_type', 'gated') 
         if fusion_type == 'mlp':
             self.edge_fusion = EdgeWeightFusionMLP(
                 num_aspects=self.num_aspects,
@@ -490,7 +481,6 @@ class modeler_Nc(nn.Module):
         else:
             raise ValueError(f": {fusion_type}")
 
-        # GNN模块
         self.GCN = GCN(self.dim, self.dropout_rate)
         self.GAT = GAT(self.dim, self.dropout_rate)
         self.GraphSAGE = GraphSAGE(self.dim, self.dropout_rate)
@@ -525,16 +515,16 @@ class modeler_Nc(nn.Module):
             nn.init.normal_(self.center_embedding.weight.data, mean=0.0, std=0.1)
 
     def _compute_edge_weights(self):
-        base_emb = self.base_aspect_embedding.weight  # [num_nodes, dim]
+        base_emb = self.base_aspect_embedding.weight
 
         edge_type_indices = self.g.edata['w']
-        base_edge_emb = base_emb[edge_type_indices]  # [E, dim]
+        base_edge_emb = base_emb[edge_type_indices]
 
         edge_weights = []
         for k in range(self.num_aspects):
             transform_layer = self.aspect_transform_layers[k]
 
-            aspect_edge_emb = transform_layer(base_edge_emb)  # [E, dim]
+            aspect_edge_emb = transform_layer(base_edge_emb)
 
             if hasattr(self, 'aspect_biases'):
                 aspect_edge_emb = aspect_edge_emb + self.aspect_biases[k]
@@ -547,7 +537,7 @@ class modeler_Nc(nn.Module):
             fused_edge_weight, attention_weights = self.edge_fusion(edge_weight)
             self.attention_weights = attention_weights
         else:
-            fused_edge_weight = self.edge_fusion(edge_weight) # [E,dim]
+            fused_edge_weight = self.edge_fusion(edge_weight)
 
         scalar_edge_weight = torch.norm(fused_edge_weight, dim=1)
         scalar_edge_weight = torch.sigmoid(scalar_edge_weight) 
@@ -563,7 +553,7 @@ class modeler_Nc(nn.Module):
         node_weight = self.center_embedding.weight.data
         embedding = self.center_embedding.weight.data
         node_weight = self.features.to(self.device)
-        # print(edge_weight)
+
         if self.use_features:
             node_weight = self.feat_to_embed(node_weight,embedding)
 
@@ -660,7 +650,7 @@ class GAT(nn.Module):
         h = self.gat1(graph, node_weight)
 
         if h.dim() > 2:
-            h = h.mean(dim=1)  # 如果有多头，取平均
+            h = h.mean(dim=1) 
         h = self.bn1(self.dropout(h))
         h = self.activate(h)
 
@@ -755,13 +745,13 @@ class EdgeWeightFusionTransformer(nn.Module):
     def forward(self, edge_weights):
         batch_size = edge_weights.shape[0]
 
-        Q = self.query(edge_weights.mean(dim=1)).unsqueeze(1)  # [E, 1, dim]
-        K = self.key(edge_weights)  # [E, num_aspects, dim]
-        V = self.value(edge_weights)  # [E, num_aspects, dim]
+        Q = self.query(edge_weights.mean(dim=1)).unsqueeze(1) 
+        K = self.key(edge_weights) 
+        V = self.value(edge_weights)
 
         attn_scores = torch.matmul(Q, K.transpose(-2, -1)) / self.scale
         attn_weights = F.softmax(attn_scores, dim=-1)
-        attended = torch.matmul(attn_weights, V).squeeze(1)  # [E, dim]
+        attended = torch.matmul(attn_weights, V).squeeze(1)  
 
         output = self.layer_norm(attended + edge_weights.mean(dim=1))
         return self.dropout(output)
@@ -791,7 +781,6 @@ class ImprovedEdgeWeightFusionCNN(nn.Module):
         self.alpha = nn.Parameter(torch.tensor(0.8))  
 
     def forward(self, edge_weights):
-        # edge_weights: [E, num_aspects, dim]
         batch_size = edge_weights.shape[0]
 
         cnn_input = edge_weights.transpose(1, 2).contiguous()  
@@ -885,10 +874,10 @@ class AdaptiveGumbelFusion(nn.Module):
         self.register_buffer('step', torch.tensor(0))
 
     def forward(self, edge_weights):
-        # edge_weights: [E, num_aspects, dim]
+        
         batch_size = edge_weights.shape[0]
 
-        attention_scores = self.attention_proj(edge_weights).squeeze(-1)  # [E, num_aspects]
+        attention_scores = self.attention_proj(edge_weights).squeeze(-1) 
 
         if self.training:
             learned_tau = torch.exp(self.log_tau)
@@ -901,17 +890,16 @@ class AdaptiveGumbelFusion(nn.Module):
         else:
             tau = self.min_tau
 
-        # Gumbel-Softmax
         attention_weights = F.gumbel_softmax(
             attention_scores,
             tau=tau,
             hard=self.hard
-        )  # [E, num_aspects]
+        )  
 
-        attended = torch.sum(edge_weights * attention_weights.unsqueeze(-1), dim=1)  # [E, dim]
+        attended = torch.sum(edge_weights * attention_weights.unsqueeze(-1), dim=1)
 
-        flattened = edge_weights.view(batch_size, -1)  # [E, num_aspects * dim]
-        transformed = self.feature_transform(flattened)  # [E, dim]
+        flattened = edge_weights.view(batch_size, -1) 
+        transformed = self.feature_transform(flattened) 
 
         output = self.layer_norm(attended + transformed)
 
