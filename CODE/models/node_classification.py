@@ -162,7 +162,6 @@ class NC(embedder):
         print('Best model Loss {} |  Test ACC {:.4f} | Test Micro f1 {:.4f} | Test Macro f1 {:.4f} | Test AUC f1 {:.4f}'.format(
                 *result))
 
-        # ========== t-SNE可视化 ==========
         try:
             self.visualize_tsne(best_z, self.labels, self.test_dataset[0], args.data)
         except Exception as e:
@@ -193,7 +192,7 @@ class NC(embedder):
         sample_embeddings = embeddings_np[sampled_idx]
         sample_labels = labels_np[sampled_idx]
 
-        print(f"进行t-SNE降维，处理 {len(sampled_idx)} 个节点（来自所有节点）...")
+        print(f"进行t-SNE降维，处理 {len(sampled_idx)} 个节点")
 
         tsne_params = {
             'n_components': 2,
@@ -668,7 +667,7 @@ from dgl.nn.pytorch import SAGEConv
 class GraphSAGE(nn.Module):
     def __init__(self, in_dim, dropout_rate=0.5):
         super(GraphSAGE, self).__init__()
-        self.num_layers = 3           #
+        self.num_layers = 3    
         self.convs = nn.ModuleList()
         self.bns = nn.ModuleList()
         self.dropouts = nn.ModuleList()
@@ -789,7 +788,7 @@ class ImprovedEdgeWeightFusionCNN(nn.Module):
         gates = self.gate(flattened)
         gated = torch.sum(edge_weights * gates.unsqueeze(-1), dim=1)
 
-        flattened_cnn = cnn_out.reshape(batch_size,-1)  # 使用reshape
+        flattened_cnn = cnn_out.reshape(batch_size,-1) 
         cnn_gates = self.attention(flattened_cnn)
         cnn_gated = torch.sum(cnn_out * cnn_gates.unsqueeze(-1), dim=1)
 
