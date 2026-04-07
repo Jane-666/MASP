@@ -80,17 +80,17 @@ def parse_args():
 
     # Set defaults based on the data argument
     if args.data == 'mydata3':
-        num_nodes_default = 11145  # 您的节点总数
-        user_node_default =  8467 # 您的用户节点数（即标签节点数）
-        num_labels_default = 6  # 您的标签类别数（NC任务需要）
-    elif args.data == 'mydata4':  # 替换为您的数据名
-        num_nodes_default = 11524  # 您的节点总数
-        user_node_default = 9000  # 您的用户节点数（即标签节点数）
+        num_nodes_default = 11145  # 节点总数
+        user_node_default =  8467 # 用户节点数（即标签节点数）
+        num_labels_default = 6  # 标签类别数（NC任务需要）
+    elif args.data == 'mydata4':  # 数据名
+        num_nodes_default = 11524  # 节点总数
+        user_node_default = 9000  # 用户节点数（即标签节点数）
         num_labels_default = 6  # 您的标签类别数（NC任务需要）
     elif args.data == 'shijie':
-        num_nodes_default = 8942  # 您的节点总数
-        user_node_default = 9000  # 您的用户节点数（即标签节点数）
-        num_labels_default = 5  # 您的标签类别数（NC任务需要）
+        num_nodes_default = 8942  # 节点总数
+        user_node_default = 9000  # 用户节点数（即标签节点数）
+        num_labels_default = 5  # 标签类别数（NC任务需要）
     elif args.data == 'dblp':
         num_nodes_default = 26128
         user_node_default = 4057
@@ -114,7 +114,7 @@ def get_node_features(args):
     with open(f'./data/{args.data}/node.dat', 'r', encoding='utf-8') as f:
         for line in f:
             parts = line.strip().split('\t')
-            if len(parts) >= 4:  # 确保有特征数据
+            if len(parts) >= 4:  
                 features = list(map(float, parts[3].split(',')))
                 node_features.append(features)
 
@@ -125,9 +125,8 @@ def main():
     args, unknown = parse_args()
     print(args.data)
     print("Start Learning [{}]".format( datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
-    # 优先使用修复后的图数据
     graph = dgl.load_graphs(f'./data/{args.data}/graph_0_fixed.bin')[0][0].to(args.device)
-    graph = dgl.add_self_loop(graph)  # 关键修改：添加自环
+    graph = dgl.add_self_loop(graph)  # 添加自环
     adj_matrix = graph.adjacency_matrix()
     print("成功从graph对象获取邻接矩阵")
 
