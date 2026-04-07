@@ -330,24 +330,24 @@ class modeler_warm(nn.Module):
     def init_weights(self):
         nn.init.normal_(self.center_embedding.weight, mean=0.0, std=0.1)
 
-    def get_embeds(self):
-        self.eval()
-        with torch.no_grad():
-            x = self.fc(self.feat)
-            indices = self.adjacency_matrix.indices()
-            src, dst = indices[0], indices[1]
-
-            graph = dgl.graph((src, dst))
-            graph = graph.to(x.device)
-
-            x = self.gcn1(graph, x)
-            x = self.gcn2(graph, x)
-            x = self.gcn3(graph, x)
-        return x.detach.cpu()
-        
     # def get_embeds(self):
+    #     self.eval()
     #     with torch.no_grad():
-    #         return self.center_embedding.weight.data.cpu()
+    #         x = self.fc(self.feat)
+    #         indices = self.adjacency_matrix.indices()
+    #         src, dst = indices[0], indices[1]
+
+    #         graph = dgl.graph((src, dst))
+    #         graph = graph.to(x.device)
+
+    #         x = self.gcn1(graph, x)
+    #         x = self.gcn2(graph, x)
+    #         x = self.gcn3(graph, x)
+    #     return x.detach.cpu()
+        
+    def get_embeds(self):
+        with torch.no_grad():
+            return self.center_embedding.weight.data.cpu()
 
 
 class AdaptiveFeatureFusion(nn.Module):
