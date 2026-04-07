@@ -30,11 +30,11 @@ def parse_args():
     parser.add_argument('--batch_size', type=int, default=9000)
     parser.add_argument('--gpu_num', type=int, default=0)
     parser.add_argument('--patience', type=int, default=20)
-    parser.add_argument('--dropout', type=int, default=0.2) #0.3
+    parser.add_argument('--dropout', type=int, default=0.2)
     parser.add_argument('--iter_max', type=int, default=300)
     parser.add_argument('--tau_gumbel', type=float, default=0.7)
     parser.add_argument('--Is_hard', action='store_true', default=True)
-    parser.add_argument('--gnn', type=str, default='GraphSAGE')# GraphSAGE
+    parser.add_argument('--gnn', type=str, default='GraphSAGE')
     parser.add_argument('--ratio', type=float, default=0.8)
     parser.add_argument('--data', type=str, default='mydata3', choices=['mydata4','mydata3','shijie','mydata', 'dblp'])
 
@@ -116,7 +116,7 @@ def main():
 
     labels = torch.tensor(np.load(f'./data/{args.data}/labels.npy')).to(args.device).long()
     train = torch.load( f"./data/{args.data}/train_dataset_{args.ratio}.pt")
-    # print(train.shape)
+
     val = torch.load( f"./data/{args.data}/val_dataset_{args.ratio}.pt")
     test = torch.load( f"./data/{args.data}/test_dataset_{args.ratio}.pt")
     node_features = get_node_features(args)
