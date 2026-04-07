@@ -1,4 +1,4 @@
-# 基于多方面学习的异构图神经网络疾病诊断
+# Heterogeneous Graph Neural Network with Multi-aspect Semantic Learning for Disease Diagnosis
 
 ### Overview
 
