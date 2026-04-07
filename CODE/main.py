@@ -18,10 +18,10 @@ def printConfig(args):
 
 def parse_args():
     # input arguments
-    parser = argparse.ArgumentParser(description='MF2Vec')
+    parser = argparse.ArgumentParser(description='MASP')
 
     # Essential parameters
-    parser.add_argument('--embedder', nargs='?', default='MF2Vec')
+    parser.add_argument('--embedder', nargs='?', default='MASP')
     parser.add_argument('--device', type=str, default='cuda:0')
     parser.add_argument('--lr', type=float, default=0.002, help="Learning rate")
     parser.add_argument('--dim', type=int, default=128, help="Dimension size.")
