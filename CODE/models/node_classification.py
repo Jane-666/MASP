@@ -298,7 +298,6 @@ class modeler_Nc(nn.Module):
             )
             self.return_attention = False
         elif fusion_type == 'gated_with_cnn':
-            # self.edge_fusion = Gated_CNN(
             self.edge_fusion = ImprovedEdgeWeightFusionCNN(
                 num_aspects=self.num_aspects,
                 dim=self.dim,
